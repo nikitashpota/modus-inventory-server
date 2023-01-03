@@ -10,7 +10,7 @@ const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
   database: "CRUDDataBase",
-  password: "12345Qwert",
+  password: "Qwert1234",
 });
 connection.connect(function (err) {
   if (err) {
