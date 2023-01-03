@@ -11,7 +11,7 @@ const connection = mysql.createConnection({
   user: "root",
   database: "CRUDDataBase",
   password: "Qwert1234",
-  port: "3001",
+  port: 3001,
   // socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
 });
 connection.connect(function (err) {
@@ -27,7 +27,7 @@ const db = mysql.createPool({
   user: "root",
   password: "Qwert1234",
   database: "CRUDDataBase",
-  port: "3001",
+  port: 3001,
   // socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
 });
 
