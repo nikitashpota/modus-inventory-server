@@ -7,7 +7,7 @@ const { application } = require("express");
 const PORT = process.env.PORT || 3001;
 
 const connection = mysql.createConnection({
-  host: "127.0.0.1",
+  host: "localhost",
   user: "root",
   database: "CRUDDataBase",
   password: "Qwert1234",
@@ -23,7 +23,7 @@ connection.connect(function (err) {
 });
 
 const db = mysql.createPool({
-  host: "127.0.0.1",
+  host: "localhost",
   user: "root",
   password: "Qwert1234",
   database: "CRUDDataBase",
