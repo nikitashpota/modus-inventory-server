@@ -11,7 +11,7 @@ const connection = mysql.createConnection({
   user: "root",
   database: "CRUDDataBase",
   password: "Qwert1234",
-  // socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
+  socketPath: '/var/run/mysqld/mysqld.sock'
 });
 connection.connect(function (err) {
   if (err) {
@@ -26,7 +26,7 @@ const db = mysql.createPool({
   user: "root",
   password: "Qwert1234",
   database: "CRUDDataBase",
-  // socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
+  socketPath: '/var/run/mysqld/mysqld.sock'
 });
 
 app.use(cors());
