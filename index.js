@@ -11,7 +11,7 @@ const connection = mysql.createConnection({
   user: "root",
   database: "CRUDDataBase",
   password: "Qwert1234",
-  socketPath: '/var/run/mysqld/mysqld.sock'
+  socketPath: "/var/run/mysqld/mysqld.sock",
 });
 connection.connect(function (err) {
   if (err) {
@@ -26,7 +26,7 @@ const db = mysql.createPool({
   user: "root",
   password: "Qwert1234",
   database: "CRUDDataBase",
-  socketPath: '/var/run/mysqld/mysqld.sock'
+  socketPath: "/var/run/mysqld/mysqld.sock",
 });
 
 app.use(cors());
@@ -59,6 +59,7 @@ app.put("/api/update", (req, res) => {
   const number = req.body.number;
   const description = req.body.description;
   const owner = req.body.owner;
+  const category = req.body.category;
 
   const sqlUpdateDescription =
     "UPDATE number_description SET description = ?  WHERE id = ?";
@@ -68,6 +69,9 @@ app.put("/api/update", (req, res) => {
 
   const sqlUpdateOwner =
     "UPDATE number_description SET owner = ?  WHERE id = ?";
+
+  const sqlUpdateCategory =
+    "UPDATE number_description SET category = ?  WHERE id = ?";
 
   db.query(sqlUpdateDescription, [description, id], (err, result) => {
     if (err) {
@@ -85,7 +89,12 @@ app.put("/api/update", (req, res) => {
     if (err) {
       console.log(err);
     }
-    console.log(owner);
+  });
+
+  db.query(sqlUpdateCategory, [category, id], (err, result) => {
+    if (err) {
+      console.log(err);
+    }
   });
 });
 
@@ -93,9 +102,10 @@ app.post("/api/insert", (req, res) => {
   const number = req.body.number;
   const description = req.body.description;
   const owner = req.body.owner;
+  const category = req.body.category;
   const sqlInsert =
-    "INSERT INTO number_description (number, description, owner) VALUES (?, ?, ?);";
-  db.query(sqlInsert, [number, description, owner], (err, result) => {
+    "INSERT INTO number_description (number, description, owner, category) VALUES (?, ?, ?, ?);";
+  db.query(sqlInsert, [number, description, owner, category], (err, result) => {
     if (err) {
       console.log(err);
     }
