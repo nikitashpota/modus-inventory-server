@@ -79,6 +79,7 @@ app.put("/api/update", upload.single("image"), (req, res) => {
   const number = req.body.number;
   const description = req.body.description;
   const owner = req.body.owner;
+  const category = req.body.category;
 
   if (req.file) {
     const sqlDeleteImage =
@@ -101,6 +102,8 @@ app.put("/api/update", upload.single("image"), (req, res) => {
       }
     });
   }
+  const sqlUpdateCategory =
+    "UPDATE number_description SET category = ?  WHERE id = ?";
 
   const sqlUpdateDescription =
     "UPDATE number_description SET description = ?  WHERE id = ?";
@@ -128,21 +131,32 @@ app.put("/api/update", upload.single("image"), (req, res) => {
       console.log(err);
     }
   });
+
+  db.query(sqlUpdateCategory, [category, id], (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+  });
 });
 
 app.post("/api/insert", upload.single("image"), (req, res) => {
   const number = req.body.number;
   const description = req.body.description;
   const owner = req.body.owner;
+  const category = req.body.category;
   const imgsrc = "http://localhost:3001/images/" + req.file.filename;
 
   const sqlInsert =
-    "INSERT INTO number_description (number, description, owner, file_src) VALUES (?, ?, ?, ?);";
-  db.query(sqlInsert, [number, description, owner, imgsrc], (err, result) => {
-    if (err) {
-      console.log(err);
+    "INSERT INTO number_description (number, description, owner, category, file_src) VALUES (?, ?, ?, ?, ?);";
+  db.query(
+    sqlInsert,
+    [number, description, owner, category, imgsrc],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
     }
-  });
+  );
 });
 
 app.listen(PORT, () => {
