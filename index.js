@@ -3,6 +3,9 @@ const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mysql = require("mysql2");
+const multer = require("multer");
+const path = require("path");
+var fs = require("fs");
 const { application } = require("express");
 const PORT = process.env.PORT || 8080;
 
@@ -31,6 +34,7 @@ const db = mysql.createPool({
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static("./public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/api/get", (req, res) => {
@@ -54,12 +58,49 @@ app.delete("/api/delete/:id", (req, res) => {
   });
 });
 
-app.put("/api/update", (req, res) => {
+var storage = multer.diskStorage({
+  destination: (req, file, callBack) => {
+    callBack(null, "./public/images/");
+  },
+  filename: (req, file, callBack) => {
+    callBack(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+
+var upload = multer({
+  storage: storage,
+});
+
+app.put("/api/update", upload.single("image"), (req, res) => {
   const id = req.body.id;
   const number = req.body.number;
   const description = req.body.description;
   const owner = req.body.owner;
-  const category = req.body.category;
+
+  if (req.file) {
+    const sqlDeleteImage =
+      "SELECT file_src FROM number_description WHERE id = ?";
+    connection.query(sqlDeleteImage, [id], (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      file_name = result[0].file_src.split("/").pop();
+      console.log(`./public/images/${file_name}`);
+      fs.unlinkSync(`./public/images/${file_name}`);
+    });
+
+    const imgsrc = "http://localhost:3001/images/" + req.file.filename;
+    const sqlUpdateFileSrc =
+      "UPDATE number_description SET file_src = ?  WHERE id = ?";
+    db.query(sqlUpdateFileSrc, [imgsrc, id], (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+  }
 
   const sqlUpdateDescription =
     "UPDATE number_description SET description = ?  WHERE id = ?";
@@ -69,9 +110,6 @@ app.put("/api/update", (req, res) => {
 
   const sqlUpdateOwner =
     "UPDATE number_description SET owner = ?  WHERE id = ?";
-
-  const sqlUpdateCategory =
-    "UPDATE number_description SET category = ?  WHERE id = ?";
 
   db.query(sqlUpdateDescription, [description, id], (err, result) => {
     if (err) {
@@ -90,22 +128,17 @@ app.put("/api/update", (req, res) => {
       console.log(err);
     }
   });
-
-  db.query(sqlUpdateCategory, [category, id], (err, result) => {
-    if (err) {
-      console.log(err);
-    }
-  });
 });
 
-app.post("/api/insert", (req, res) => {
+app.post("/api/insert", upload.single("image"), (req, res) => {
   const number = req.body.number;
   const description = req.body.description;
   const owner = req.body.owner;
-  const category = req.body.category;
+  const imgsrc = "http://localhost:3001/images/" + req.file.filename;
+
   const sqlInsert =
-    "INSERT INTO number_description (number, description, owner, category) VALUES (?, ?, ?, ?);";
-  db.query(sqlInsert, [number, description, owner, category], (err, result) => {
+    "INSERT INTO number_description (number, description, owner, file_src) VALUES (?, ?, ?, ?);";
+  db.query(sqlInsert, [number, description, owner, imgsrc], (err, result) => {
     if (err) {
       console.log(err);
     }
