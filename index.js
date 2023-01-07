@@ -106,6 +106,7 @@ app.put("/api/update", upload.single("image"), (req, res) => {
       "UPDATE number_description SET file_src = ?  WHERE id = ?";
     db.query(sqlUpdateFileSrc, [imgsrc, id], (result) => {});
   }
+  
   const sqlUpdateCategory =
     "UPDATE number_description SET category = ?  WHERE id = ?";
 
@@ -117,8 +118,6 @@ app.put("/api/update", upload.single("image"), (req, res) => {
 
   const sqlUpdateOwner =
     "UPDATE number_description SET owner = ?  WHERE id = ?";
-    
-  res.send("OK OK");
 
   db.query(sqlUpdateDescription, [description, id], (err, result) => {
     if (err) {
@@ -143,6 +142,8 @@ app.put("/api/update", upload.single("image"), (req, res) => {
       console.log(err);
     }
   });
+
+  res.send("UPLOAD OK");
 });
 
 app.post("/api/insert", upload.single("image"), (req, res) => {
