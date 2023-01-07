@@ -104,9 +104,7 @@ app.put("/api/update", upload.single("image"), (req, res) => {
     const imgsrc = "http://45.130.43.181:8080/images/" + req.file.filename;
     const sqlUpdateFileSrc =
       "UPDATE number_description SET file_src = ?  WHERE id = ?";
-    db.query(sqlUpdateFileSrc, [imgsrc, id], (result) => {
-      res.send(imgsrc);
-    });
+    db.query(sqlUpdateFileSrc, [imgsrc, id], (result) => {});
   }
   const sqlUpdateCategory =
     "UPDATE number_description SET category = ?  WHERE id = ?";
@@ -119,6 +117,8 @@ app.put("/api/update", upload.single("image"), (req, res) => {
 
   const sqlUpdateOwner =
     "UPDATE number_description SET owner = ?  WHERE id = ?";
+    
+  res.send("OK OK");
 
   db.query(sqlUpdateDescription, [description, id], (err, result) => {
     if (err) {
