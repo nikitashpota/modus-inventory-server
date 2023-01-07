@@ -77,7 +77,7 @@ var storage = multer.diskStorage({
   filename: (req, file, callBack) => {
     callBack(
       null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+      file.originalname
     );
   },
 });
@@ -86,7 +86,7 @@ var upload = multer({
   storage: storage,
 });
 
-app.put("/api/update", upload.single("image5"), (req, res) => {
+app.put("/api/update", upload.single("image"), (req, res) => {
   const id = req.body.id;
   const number = req.body.number;
   const description = req.body.description;
