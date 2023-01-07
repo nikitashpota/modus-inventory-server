@@ -50,16 +50,15 @@ app.get("/api/get", (req, res) => {
 app.delete("/api/delete/:id", (req, res) => {
   const id = req.params.id;
 
-  const sqlDeleteImage =
-      "SELECT file_src FROM number_description WHERE id = ?";
-    connection.query(sqlDeleteImage, [id], (err, result) => {
-      if (err) {
-        console.log(err);
-      }
-      file_name = result[0].file_src.split("/").pop();
-      console.log(`./public/images/${file_name}`);
-      fs.unlinkSync(`./public/images/${file_name}`);
-    });
+  const sqlDeleteImage = "SELECT file_src FROM number_description WHERE id = ?";
+  connection.query(sqlDeleteImage, [id], (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+    file_name = result[0].file_src.split("/").pop();
+    console.log(`./public/images/${file_name}`);
+    fs.unlinkSync(`./public/images/${file_name}`);
+  });
 
   const sqlDelete = "DELETE FROM number_description WHERE id = ?";
   db.query(sqlDelete, id, (err, result) => {
@@ -75,10 +74,7 @@ var storage = multer.diskStorage({
     callBack(null, "./public/images/");
   },
   filename: (req, file, callBack) => {
-    callBack(
-      null,
-      file.originalname
-    );
+    callBack(null, file.originalname);
   },
 });
 
@@ -108,10 +104,8 @@ app.put("/api/update", upload.single("image"), (req, res) => {
     const imgsrc = "http://45.130.43.181:8080/images/" + req.file.filename;
     const sqlUpdateFileSrc =
       "UPDATE number_description SET file_src = ?  WHERE id = ?";
-    db.query(sqlUpdateFileSrc, [imgsrc, id], (err, result) => {
-      if (err) {
-        console.log(err);
-      }
+    db.query(sqlUpdateFileSrc, [imgsrc, id], (result) => {
+      res.send(imgsrc);
     });
   }
   const sqlUpdateCategory =
