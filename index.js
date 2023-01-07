@@ -49,6 +49,18 @@ app.get("/api/get", (req, res) => {
 
 app.delete("/api/delete/:id", (req, res) => {
   const id = req.params.id;
+
+  const sqlDeleteImage =
+      "SELECT file_src FROM number_description WHERE id = ?";
+    connection.query(sqlDeleteImage, [id], (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      file_name = result[0].file_src.split("/").pop();
+      console.log(`./public/images/${file_name}`);
+      fs.unlinkSync(`./public/images/${file_name}`);
+    });
+
   const sqlDelete = "DELETE FROM number_description WHERE id = ?";
   db.query(sqlDelete, id, (err, result) => {
     if (err) {
@@ -74,7 +86,7 @@ var upload = multer({
   storage: storage,
 });
 
-app.put("/api/update", upload.single("image"), (req, res) => {
+app.put("/api/update", upload.single("image5"), (req, res) => {
   const id = req.body.id;
   const number = req.body.number;
   const description = req.body.description;
