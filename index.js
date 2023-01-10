@@ -52,7 +52,7 @@ var storage = multer.diskStorage({
     callBack(null, "./public/images/");
   },
   filename: (req, file, callBack) => {
-    callBack(null, `image-${Data.now()}-${path.extname(file.originalname)}`);
+    callBack(null, `image-${Date.now()}-${path.extname(file.originalname)}`);
   },
 });
 
