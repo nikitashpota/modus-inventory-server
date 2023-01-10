@@ -20,7 +20,7 @@ connection.connect(function (err) {
   if (err) {
     return console.error("Ошибка: " + err.message);
   } else {
-    console.log("Подключение к серверу MySQL успешно установлено");
+    console.log("MySQL is connect.");
   }
 });
 
@@ -47,39 +47,43 @@ app.get("/api/get", (req, res) => {
   });
 });
 
-app.delete("/api/delete/:id", (req, res) => {
-  const id = req.params.id;
-
-  const sqlDeleteImage = "SELECT file_src FROM number_description WHERE id = ?";
-  connection.query(sqlDeleteImage, [id], (err, result) => {
-    if (err) {
-      console.log(err);
-    }
-    file_name = result[0].file_src.split("/").pop();
-    console.log(`./public/images/${file_name}`);
-    fs.unlinkSync(`./public/images/${file_name}`);
-  });
-
-  const sqlDelete = "DELETE FROM number_description WHERE id = ?";
-  db.query(sqlDelete, id, (err, result) => {
-    if (err) {
-      console.log(err);
-    }
-    res.send(`delete from number_description id = ${id}`);
-  });
-});
-
 var storage = multer.diskStorage({
   destination: (req, file, callBack) => {
     callBack(null, "./public/images/");
   },
   filename: (req, file, callBack) => {
-    callBack(null, file.originalname);
+    callBack(null, `image-${Data.now()}-${path.extname(file.originalname)}`);
   },
 });
 
 var upload = multer({
   storage: storage,
+});
+
+app.delete("/api/delete/:id", (req, res) => {
+  const id = req.params.id;
+
+  const sqlDeleteImage = "SELECT file_src FROM number_description WHERE id = ?";
+  const sqlDelete = "DELETE FROM number_description WHERE id = ?";
+  try {
+    db.query(sqlDeleteImage, [id], (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      file_name = result[0].file_src.split("/").pop();
+      console.log(`./public/images/${file_name}`);
+      fs.unlinkSync(`./public/images/${file_name}`);
+    });
+
+    db.query(sqlDelete, id, (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      res.send(`delete from number_description id = ${id}`);
+    });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 app.put("/api/update", upload.single("image"), (req, res) => {
@@ -92,21 +96,25 @@ app.put("/api/update", upload.single("image"), (req, res) => {
   if (req.file) {
     const sqlDeleteImage =
       "SELECT file_src FROM number_description WHERE id = ?";
-    connection.query(sqlDeleteImage, [id], (err, result) => {
-      if (err) {
-        console.log(err);
-      }
-      file_name = result[0].file_src.split("/").pop();
-      console.log(`./public/images/${file_name}`);
-      fs.unlinkSync(`./public/images/${file_name}`);
-    });
+    try {
+      db.query(sqlDeleteImage, [id], (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+        file_name = result[0].file_src.split("/").pop();
+        console.log(`./public/images/${file_name}`);
+        fs.unlinkSync(`./public/images/${file_name}`);
+      });
+    } catch (err) {
+      console.log(err);
+    }
 
     const imgsrc = "http://45.130.43.181:8080/images/" + req.file.filename;
     const sqlUpdateFileSrc =
       "UPDATE number_description SET file_src = ?  WHERE id = ?";
     db.query(sqlUpdateFileSrc, [imgsrc, id], (result) => {});
   }
-  
+
   const sqlUpdateCategory =
     "UPDATE number_description SET category = ?  WHERE id = ?";
 
