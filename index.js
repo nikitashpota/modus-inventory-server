@@ -44,6 +44,7 @@ app.get("/api/get", (req, res) => {
       console.log(err);
     }
     res.send(result);
+    console.log(result);
   });
 });
 
@@ -109,7 +110,7 @@ app.put("/api/update", upload.single("image"), (req, res) => {
       console.log(err);
     }
 
-    const imgsrc = "http://45.130.43.181:8080/images/" + req.file.filename;
+    const imgsrc = "http://62.117.108.6:8080/images/" + req.file.filename;
     const sqlUpdateFileSrc =
       "UPDATE number_description SET file_src = ?  WHERE id = ?";
     db.query(sqlUpdateFileSrc, [imgsrc, id], (result) => {});
@@ -159,7 +160,7 @@ app.post("/api/insert", upload.single("image"), (req, res) => {
   const description = req.body.description;
   const owner = req.body.owner;
   const category = req.body.category;
-  const imgsrc = "http://45.130.43.181:8080/images/" + req.file.filename;
+  const imgsrc = "http://62.117.108.6:8080/images/" + req.file.filename;
 
   const sqlInsert =
     "INSERT INTO number_description (number, description, owner, category, file_src) VALUES (?, ?, ?, ?, ?);";
